@@ -27,70 +27,51 @@ echo ======================================================\n
 echo Running all tests..."\n\n
 
 # Add tests below
-test "Start and dont press the button. Result: State = B0_R PORTB = 0x01"
-set smP1_State = start
+test "Start and dont press the buttons. Result: State = none PORTC = 0x07"
+set smP2_State = start
+
 setPINA  0x00
 continue 2
-expectPORTB 0x01
+expectPORTC 0x07
 checkResult
-expect smP1_State 2
+expect smP2_State 1
 checkResult
 
 
-test "Start and hold button simultaneously. Result: State = B0_P PORTB = 0x01"
-set smP1_State = start
+test "Start then press both buttons. Result: State = both PORTC = 0x00"
+set smP2_State = start
+
+setPINA  0x00
+continue 2
+setPINA  0x03
+continue 2
+expectPORTC 0x00
+checkResult
+expect smP2_State 4
+checkResult
+
+
+test "Start then press A0 button. Result: State = add PORTC = 0x08"
+set smP2_State = start
+setPINA  0x00
+continue 2
 setPINA  0x01
 continue 2
-expectPORTB 0x01
+expect smP2_State 2
 checkResult
-expect smP1_State 1
-checkResult
-
-
-test "Start, press and hold button after. Result: State = B1_P PORTB = 0x02"
-set smP1_State = start
-setPINA  0x00
-continue 2
-setPINA 0x01
-continue 2
-expectPORTB 0x02
-checkResult
-expect smP1_State 3
+expectPORTC 0x08
 checkResult
 
-
-
-test "Start, then press button and release. Result: State = B1_R PORTB = 0x02"
-set smP1_State = start
-setPINA  0x00
-continue 2
-setPINA 0x01
-continue 2
+test "subtract button. Result: State = sub PORTC = 0x06"
+set smP2_State = start
 setPINA 0x00
 continue 2
-expectPORTB 0x02
-checkResult
-expect smP1_State 4
-checkResult
-
-
-
-test "Start, then press button then press again and hold. Result: State = B0_P PORTB = 0x01"
-set smP1_State = start
-setPINA  0x00
+setPinA 0x02
 continue 2
-setPINA 0x01
-continue 2
-setPINA 0x00
-continue 2
-setPINA 0x01
-continue 2
-expectPORTB 0x01
+expect smP2_State 3
 checkResult
-expect smP1_State 1
+expectPORTC 0x06
 checkResult
-
-
 
 # Report on how many tests passed/tests ran
 set $passed=$tests-$failed

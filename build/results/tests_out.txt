@@ -1,7 +1,13 @@
-Breakpoint 1 at 0x242: file source/main.c, line 104.
+Breakpoint 1 at 0x288: file source/main.c, line 126.
 Note: automatically using hardware breakpoints for read-only addresses.
 ======================================================
 Running all tests..."
 
-"Start and dont press the button. Result: State = B0_R PORTB = 0x01"..."Start and hold button simultaneously. Result: State = B0_P PORTB = 0x01"..."Start, press and hold button after. Result: State = B1_P PORTB = 0x02"..."Start, then press button and release. Result: State = B1_R PORTB = 0x02"..."Start, then press button then press again and hold. Result: State = B0_P PORTB = 0x01"...======================================================
+"Start and dont press the buttons. Result: State = none PORTC = 0x07"..."Start then press both buttons. Result: State = both PORTC = 0x00"..."Start then press A0 button. Result: State = add PORTC = 0x08"...
+	Expected 0x08 
+	PORTC '0x800028:	0x07
+"subtract button. Result: State = sub PORTC = 0x06"...
+	Expected 0x06 
+	PORTC '0x800028:	0x07
+======================================================
 Quitting: Remote doesn't know how to detach

@@ -12,94 +12,116 @@
 #include "simAVRHeader.h"
 #endif
 
-enum smP1_States {start, B0_P, B0_R, B1_P, B1_R} smP1_State;
+enum smP2_States {start, none, add, sub, both} smP2_State;
 
 void smP1(){
-        unsigned char A0 = PINA;
-        switch(smP1_State) {/*Transitions*/
+        unsigned char A0 = PINA & 0x01;
+	unsigned char A1 = PINA & 0x02;
+	unsigned char valC,f,f2;
+        switch(smP2_State) {/*Transitions*/
                 case start:
-                        smP1_State = B0_P;
+                        smP2_State = none;
+			valC = 0x07;
                         break;
-
-                case B0_P:
-                        if(A0){
-                                smP1_State = B0_P;
+                case none:
+			
+                        if(A0 && !A1 && (valC < 10)){
+				smP2_State = add;
                         }
-                        else if(!A0){
-                                smP1_State = B0_R;
-                        }
+			else if(A1 && !A0 && (valC >= 0)){	
+				smP2_State = sub;
+			}
+			else if(A0 && A1){
+				smP2_State = both;
+			}
                         else {
-                                smP1_State = B0_P;
+                                smP2_State = none;
                         }
                         break;
 
-                case B0_R:
-                        if(!A0){
-                                smP1_State = B0_R;
+                case add:
+                        if(A1 && A0){
+                                smP2_State = both;
                         }
-                        else if(A0){
-                                smP1_State = B1_P;
+                        else if(!A1 && !A0){
+                                smP2_State = none;
                         }
                         else{
-                                smP1_State = B0_R;
+                                smP2_State = add;
                         }
                         break;
 
-                case B1_P:
-                        if(A0) {
-                                smP1_State = B1_P;
+                case sub:
+                        if(!A1&&!A0) {
+                                smP2_State = none;
                         }
-	 		else if(!A0){
-                                smP1_State = B1_R;
+	 		else if(A1 && A0){
+                                smP2_State = both;
                         }
                         else{
-                                smP1_State = B1_P;
+                                smP2_State = sub;
                         }
                         break;
 
-                case B1_R:
-                        if(!A0){
-                                smP1_State = B1_R;
+                case both:
+                        if(!A0 && A1){
+                                smP2_State = sub;
                         }
-                        else if(A0){
-                                smP1_State = B0_P;
+                        else if(A0 && !A1){
+                                smP2_State = add;
                         }
-                        else{
-                                smP1_State = B1_R;
+                        else if(!A0 && !A1){
+                                smP2_State = none;
                         }
+			else{
+				smP2_State = both;
+			}
                         break;
                 default:
-                        smP1_State = start;
+                        smP2_State = start;
 			break;
         }
-        switch(smP1_State){
+        switch(smP2_State){
                 case start:
+			f= 0x01;
+			f2= 0x01;
                         break;
 
-                case B0_P:
-                        PORTB = 0x01;
-                        break;
+                case none:
+ 	                break;
 
-                case B0_R:
+                case add:
+			if(f){
+				valC = 0x08;
+			}
+			f = 0x00;
                         break;
-                case B1_P:
-                        PORTB = 0x02;
+                case sub:
+			if(f2){
+				valC = 0x06;
+			}
+			f2 = 0x00;
                         break;
-                case B1_R:
+                case both:
+			valC = 0x00;
                         break;
                 default:
-                        PORTB = 0x01;
+			valC = 0x07;
+			f = 0x01;
+			f2 = 0x01;
                         break;
         }
+	
+	PORTC = valC;
 }
 
 int main(void) {
     /* Insert DDR and PORT initializations */
         DDRA = 0x00;
         PORTA = 0xFF;
-        DDRB = 0xFF;
-        PORTB = 0x00;
-        smP1_State = start;
+        DDRC = 0xFF;
+        PORTC = 0x00;
+        smP2_State = start;
     /* Insert your solution below */
    while (1) {
         smP1();
