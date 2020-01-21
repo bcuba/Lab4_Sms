@@ -29,7 +29,6 @@ echo Running all tests..."\n\n
 # Add tests below
 test "Start and dont press the button. Result: State = B0_R PORTB = 0x01"
 set smP1_State = start
-display smP1_State
 setPINA  0x00
 continue 2
 expectPORTB 0x01
@@ -48,16 +47,49 @@ expect smP1_State 1
 checkResult
 
 
-test "Start, press and hold button after. Result: State = B1_R PORTB = 0x02"
+test "Start, press and hold button after. Result: State = B1_P PORTB = 0x02"
 set smP1_State = start
 setPINA  0x00
 continue 2
 setPINA 0x01
-contine 2
+continue 2
 expectPORTB 0x02
 checkResult
 expect smP1_State 3
 checkResult
+
+
+
+test "Start, then press button and release. Result: State = B1_R PORTB = 0x02"
+set smP1_State = start
+setPINA  0x00
+continue 2
+setPINA 0x01
+continue 2
+setPINA 0x00
+continue 2
+expectPORTB 0x02
+checkResult
+expect smP1_State 4
+checkResult
+
+
+
+test "Start, then press button then press again and hold. Result: State = B0_P PORTB = 0x01"
+set smP1_State = start
+setPINA  0x00
+continue 2
+setPINA 0x01
+continue 2
+setPINA 0x00
+continue 2
+setPINA 0x01
+continue 2
+expectPORTB 0x01
+checkResult
+expect smP1_State 1
+checkResult
+
 
 
 # Report on how many tests passed/tests ran

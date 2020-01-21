@@ -49,7 +49,7 @@ void smP1(){
                         if(A0) {
                                 smP1_State = B1_P;
                         }
-		else if(!A0){
+	 		else if(!A0){
                                 smP1_State = B1_R;
                         }
                         else{
@@ -61,7 +61,7 @@ void smP1(){
                         if(!A0){
                                 smP1_State = B1_R;
                         }
-                        else if(!A0){
+                        else if(A0){
                                 smP1_State = B0_P;
                         }
                         else{
@@ -70,6 +70,7 @@ void smP1(){
                         break;
                 default:
                         smP1_State = start;
+			break;
         }
         switch(smP1_State){
                 case start:
@@ -100,10 +101,10 @@ int main(void) {
         PORTB = 0x00;
         smP1_State = start;
     /* Insert your solution below */
-                   while (1) {
+   while (1) {
         smP1();
     }
     return 1;
 }
-                                                                                                                                                                                                       102,1         91%
+
 
